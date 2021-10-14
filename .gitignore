@@ -6,6 +6,10 @@ bin-release/
 
 # Other files and folders
 .settings/
+.env
+emotes.json
+embeds.json
+config.json
 
 # Executables
 *.swf
