@@ -1,0 +1,27 @@
+{
+  "name": "yeahbutstatistics-discord-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "core.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mahcksimus",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/builders": "^0.6.0",
+    "@discordjs/rest": "^0.1.0-canary.0",
+    "7tv": "^0.0.4",
+    "discord-api-types": "^0.23.1",
+    "discord.js": "^13.2.0",
+    "discord.js-pagination": "^1.0.3",
+    "discordjs-button-pagination": "^2.0.1",
+    "dotenv": "^10.0.0",
+    "fs": "^0.0.1-security",
+    "glob": "^7.2.0",
+    "mysql": "^2.18.1",
+    "reconlx": "^2.4.3",
+    "tmi.js": "^1.8.5",
+    "wokcommands": "^1.4.8"
+  }
+}

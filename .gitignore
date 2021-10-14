@@ -10,6 +10,7 @@ bin-release/
 emotes.json
 embeds.json
 config.json
+todo.txt
 
 # Executables
 *.swf
