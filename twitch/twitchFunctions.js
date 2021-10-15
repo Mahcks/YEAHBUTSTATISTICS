@@ -42,14 +42,14 @@ async function emoteUsed(emoteMap) {
                 // emote does not exist, make it with +1 usage in emote_usage
                 db.query(`INSERT INTO emote_usage (code, platform, count, time_stamps) VALUES (?, ?, ?, ?);`, [key, fetchPlatfromFromCode(key), value, dateTime], (err, rows) => {
                     if (err) throw err;
-                    console.log(`[EMOTE_USAGE] Emote added with ${key}`);
+                    console.log(`[EMOTE_USAGE] ${key} added`);
                 });
 
             } else {
                 // emote exists, update count +1 and add the timestamp
                 db.query(`UPDATE emote_usage SET count = count + ? WHERE code = ?`, [value, key], (err, rows) => {
                     if (err) throw err;
-                    console.log(`[EMOTES] ${key}: has been used ${value}`);
+                    console.log(`[EMOTES] ${key}: ${value}`);
                 });
             }
         });

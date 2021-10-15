@@ -175,7 +175,9 @@ function fetchAndUpdateLeaderboards(client) {
         // Updates the message
         fetchMessageAndUpdate("all", `**Top 25 Used Emotes - ${dateTime}**\n\n${finalMessage.replace()}`, client);
     });
+}
 
+function leaderboardUpdateButton() {
     
 }
 
