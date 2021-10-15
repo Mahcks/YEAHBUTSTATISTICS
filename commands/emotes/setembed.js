@@ -56,5 +56,6 @@ module.exports = {
     // This will set embed channel for bttv/ffz/7tv. Each channels embed will constantly update with information.
     execute(client, interaction, arguments) {
             embedGen.fetchAndUpdateLeaderboards(client);
+            
     }
 }
