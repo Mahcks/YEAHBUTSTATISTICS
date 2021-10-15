@@ -1,7 +1,14 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
 var db = require('./db');
 var testArray = [];
+var lbArray = [];
 const fs = require('fs');
+
+var today = new Date();
+var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+var dateTime = date+' '+time;
+
 
 /*
 Ideas on how to store the page information
@@ -40,7 +47,6 @@ function fetchMessageAndUpdate(platform, data, client) {
         var guild = client.guilds.cache.get('895033377336463380');
         var channel = guild.channels.cache.find(c => c.id === rows[0].channel_id);
         channel.messages.fetch(rows[0].message_id).then(msg => {
-            console.log(msg);    
             msg.edit(data);
             }).catch(err => {
                 console.log(err);
@@ -94,7 +100,8 @@ function createEmbedData() {
         }
 
         var newArray = testArray.sort(compare);
-        var chunkedArray = chunkPages(newArray, 25);
+
+        /*var chunkedArray = chunkPages(newArray, 25);
         
         // Make the array into a JSON object
         var createdPages = createPages(chunkedArray);
@@ -103,8 +110,8 @@ function createEmbedData() {
         var finishedPages = storePages(createdPages);
 
         
-
-        return finishedPages;
+        return finishedPages;*/
+        return newArray;
     });
 }
 
@@ -139,7 +146,36 @@ function createEmbed() {
 }
 
 // Creates the data for the message and updates the message
-function fetchAndUpdateLeaderboards() {
+function fetchAndUpdateLeaderboards(client) {
+    // Fetch the data to display 
+    db.query(`SELECT * FROM emote_usage`, (err, rows) => {
+        if (err) throw err;
+        for (var i = 0; i < rows.length; i++) {
+            lbArray.push({
+                code: rows[i].code,
+                count: rows[i].count
+            });
+        }
+        // Sorting method
+        var compare = function(a, b) {
+            return parseInt(b.count) - parseInt(a.count);
+        }
+
+        var newArray = lbArray.sort(compare);
+        
+        var textArray = [];
+        for (i = 0; i < newArray.length; i++) {
+            textArray.push(`${newArray[i].code} - ${newArray[i].count}`);
+        }
+
+        var chunkedArray = chunkPages(textArray, 25);
+        
+        var finalMessage = JSON.stringify(chunkedArray[0]).split(",").join("\n").replace(/[\[\]'"]+/g, '')
+        
+        // Updates the message
+        fetchMessageAndUpdate("all", `**Top 25 Used Emotes - ${dateTime}**\n\n${finalMessage.replace()}`, client);
+    });
+
     
 }
 
@@ -148,4 +184,4 @@ module.exports = async (client) => {
 }
 
 //fetchEmbedAndUpdate
-module.exports = { chunkPages, createEmbedData, createPages, createEmbed }
+module.exports = { chunkPages, createEmbedData, createPages, createEmbed, fetchMessageAndUpdate, fetchAndUpdateLeaderboards }

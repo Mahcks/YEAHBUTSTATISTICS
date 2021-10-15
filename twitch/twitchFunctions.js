@@ -20,6 +20,7 @@ const ffzArray = [];
 const seventvArray = [];
 const totalCount = {};
 
+let localPlatforms = [];
 let localEmotes = [];
 let localCodes = [];
 let storedCodes = [];
@@ -39,7 +40,7 @@ async function emoteUsed(emoteMap) {
             if (err) throw err;
             if (rows.length === 0) {
                 // emote does not exist, make it with +1 usage in emote_usage
-                db.query(`INSERT INTO emote_usage (code, count, time_stamps) VALUES (?, ?, ?);`, [key, value, dateTime], (err, rows) => {
+                db.query(`INSERT INTO emote_usage (code, platform, count, time_stamps) VALUES (?, ?, ?, ?);`, [key, fetchPlatfromFromCode(key), value, dateTime], (err, rows) => {
                     if (err) throw err;
                     console.log(`[EMOTE_USAGE] Emote added with ${key}`);
                 });
@@ -73,8 +74,19 @@ async function fetchLocalIds() {
         let emotes = JSON.parse(data);
         for (let i = 0; i < emotes.length; i++) {
             localCodes.push(emotes[i]["code"]);
+            localPlatforms.push(emotes[i]["platform"]);
         }
     });
+}
+
+// Fetch the platform of an emote
+var retrievedPlatform = "";
+function fetchPlatfromFromCode(emoteCode) {
+    db.query(`SELECT * FROM emotes WHERE code = ?;`, [emoteCode], (err, rows) => {
+        retrievedPlatform = rows[0].type;
+    });
+
+    return retrievedPlatform;
 }
 
 // Writes JSON file locally to store emotes
@@ -196,4 +208,4 @@ function compareEmoteToMessage(message) {
     emoteUsed(emoteMap);
 }
 
-module.exports = {storeEmote, emoteUsed, getEmotes, fetchLocalIds, fetchEmoteIds, storeEmotesLocally, compareEmoteToMessage, weWide}
+module.exports = {storeEmote, emoteUsed, getEmotes, fetchLocalIds, fetchEmoteIds, storeEmotesLocally, compareEmoteToMessage, weWide, fetchPlatfromFromCode}

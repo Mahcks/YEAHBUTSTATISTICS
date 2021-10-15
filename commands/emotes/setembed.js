@@ -1,6 +1,7 @@
 const { MessageEmbed, MessageButton } = require('discord.js');
 const embedGen = require('../../utils/embedGenerator');
 var db = require('../../utils/db');
+var tf = require('../../twitch/twitchFunctions');
 const paginationEmbed = require('discordjs-button-pagination');
 const {pagination} = require('reconlx');
 
@@ -54,6 +55,6 @@ module.exports = {
     Perms: "ADMINISTRATOR",
     // This will set embed channel for bttv/ffz/7tv. Each channels embed will constantly update with information.
     execute(client, interaction, arguments) {
-            storeEmbedMessage("all", "898274769915506748", "898282805895782531");
+            embedGen.fetchAndUpdateLeaderboards(client);
     }
 }
