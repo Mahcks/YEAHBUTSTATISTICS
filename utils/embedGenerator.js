@@ -43,12 +43,10 @@ Fetch
 // Fetch the embed and update it with an embed
 function fetchMessageAndUpdate(platform, data, client) {
     db.query(`SELECT * FROM embeds WHERE platform = ?`, [platform], (err, rows) => {
-        console.log(rows[0].channel_id, rows[0].message_id);
         var guild = client.guilds.cache.get('895033377336463380');
         var channel = guild.channels.cache.find(c => c.id === rows[0].channel_id);
         channel.messages.fetch(rows[0].message_id).then(msg => {
             msg.edit(data);
-            msg.reactions.removeAll();
             }).catch(err => {
                 console.log(err);
         });
@@ -130,7 +128,6 @@ function createEmbedButtons() {
     );
     
     db.query(`SELECT * FROM embeds WHERE platform = ?`, [platform], (err, rows) => {
-        console.log(rows[0].channel_id, rows[0].message_id);
         var guild = client.guilds.cache.get('895033377336463380');
         var channel = guild.channels.cache.find(c => c.id === rows[0].channel_id);
         channel.messages.fetch(rows[0].message_id).then(msg => {
@@ -150,6 +147,7 @@ function fetchAndUpdateTopLeaderboards(client) {
     // Fetch the data to display 
     db.query(`SELECT * FROM emote_usage`, (err, rows) => {
         if (err) throw err;
+        lbArray = [];
         for (var i = 0; i < rows.length; i++) {
             lbArray.push({
                 code: rows[i].code,
@@ -161,17 +159,21 @@ function fetchAndUpdateTopLeaderboards(client) {
             return parseInt(b.count) - parseInt(a.count);
         }
 
-        var newArray = lbArray.sort(compare);
+        var newArray = [];
+        newArray = lbArray.sort(compare);
         
         var textArray = [];
         for (i = 0; i < newArray.length; i++) {
             textArray.push(`${newArray[i].code} - ${newArray[i].count}`);
         }
 
-        var chunkedArray = chunkPages(textArray, 25);
+        var chunkedArray = [];
+        chunkedArray = chunkPages(textArray, 25);
         
-        var finalMessage = JSON.stringify(chunkedArray[0]).split(",").join("\n").replace(/[\[\]'"]+/g, '')
-        
+        var finalMessage = "";
+        finalMessage = JSON.stringify(chunkedArray[0]).split(",").join("\n").replace(/[\[\]'"]+/g, '')
+        console.log(finalMessage);
+
         // Updates the message
         fetchMessageAndUpdate("all", `**Top 25 Used Emotes - ${dateTime}**\n\n${finalMessage.replace()}`, client);
     });
@@ -182,7 +184,6 @@ function leaderboardUpdateButton() {
 }
 
 module.exports = async (client) => {
-    console.log(client)
 }
 
 //fetchEmbedAndUpdate
