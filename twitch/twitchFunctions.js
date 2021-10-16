@@ -49,7 +49,10 @@ async function emoteUsed(emoteMap) {
                 // emote exists, update count +1 and add the timestamp
                 db.query(`UPDATE emote_usage SET count = count + ? WHERE code = ?`, [value, key], (err, rows) => {
                     if (err) throw err;
-                    console.log(`[EMOTES] ${key}: ${value}`);
+                    db.query(`UPDATE emote_usage SET time_stamps = time_stamps + ? WHERE code = ?`, [dateTime, key], (err, rows) => {
+                        if (err) throw err;
+                        console.log(`[EMOTES] ${key}: ${value}`);
+                    });
                 });
             }
         });

@@ -48,6 +48,7 @@ function fetchMessageAndUpdate(platform, data, client) {
         var channel = guild.channels.cache.find(c => c.id === rows[0].channel_id);
         channel.messages.fetch(rows[0].message_id).then(msg => {
             msg.edit(data);
+            msg.reactions.removeAll();
             }).catch(err => {
                 console.log(err);
         });
@@ -146,7 +147,7 @@ function createEmbed() {
 }
 
 // Creates the data for the message and updates the message
-function fetchAndUpdateLeaderboards(client) {
+function fetchAndUpdateTopLeaderboards(client) {
     // Fetch the data to display 
     db.query(`SELECT * FROM emote_usage`, (err, rows) => {
         if (err) throw err;
@@ -186,4 +187,4 @@ module.exports = async (client) => {
 }
 
 //fetchEmbedAndUpdate
-module.exports = { chunkPages, createEmbedData, createPages, createEmbed, fetchMessageAndUpdate, fetchAndUpdateLeaderboards }
+module.exports = { chunkPages, createEmbedData, createPages, createEmbed, fetchMessageAndUpdate, fetchAndUpdateTopLeaderboards }
