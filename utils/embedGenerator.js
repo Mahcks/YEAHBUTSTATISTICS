@@ -138,12 +138,12 @@ function createEmbedButtons() {
     });
 }
 
-function createEmbed() {
-    
+function getLastArray(array) { 
+    return Array.isArray(array) && array.length ? array[array.length - 1] : null;
 }
 
 // Creates the data for the message and updates the message
-function fetchAndUpdateTopLeaderboards(client) {
+function fetchAndUpdateTopLeaderboards(client, rank) {
     // Fetch the data to display 
     db.query(`SELECT * FROM emote_usage`, (err, rows) => {
         if (err) throw err;
@@ -169,13 +169,23 @@ function fetchAndUpdateTopLeaderboards(client) {
 
         var chunkedArray = [];
         chunkedArray = chunkPages(textArray, 25);
-        
-        var finalMessage = "";
-        finalMessage = JSON.stringify(chunkedArray[0]).split(",").join("\n").replace(/[\[\]'"]+/g, '')
-        console.log(finalMessage);
 
-        // Updates the message
-        fetchMessageAndUpdate("all", `**Top 25 Used Emotes - ${dateTime}**\n\n${finalMessage.replace()}`, client);
+        var finalMessage = "";
+        if (rank === "top") {
+            // Gets the top emotes used from the chunked array
+            finalMessage = JSON.stringify(chunkedArray[0]).split(",").join("\n").replace(/[\[\]'"]+/g, '');
+
+            // Update the message
+            fetchMessageAndUpdate("all", `**Top 25 Used Emotes - ${dateTime}**\n\n${finalMessage.replace()}`, client);
+
+        } else if (rank === "bottom") {
+            // Get the last page of the chunked array for least used emotes.
+            finalMessage = JSON.stringify(getLastArray(chunkedArray)).split(",").join("\n").replace(/[\[\]'"]+/g, '');
+
+            // Update the message
+            fetchMessageAndUpdate("all", `**25 Least Used Emotes - ${dateTime}**\n\n${finalMessage.replace()}`, client);
+        }
+
     });
 }
 
@@ -187,4 +197,4 @@ module.exports = async (client) => {
 }
 
 //fetchEmbedAndUpdate
-module.exports = { chunkPages, createEmbedData, createPages, createEmbed, fetchMessageAndUpdate, fetchAndUpdateTopLeaderboards }
+module.exports = { chunkPages, createEmbedData, createPages, fetchMessageAndUpdate, fetchAndUpdateTopLeaderboards }

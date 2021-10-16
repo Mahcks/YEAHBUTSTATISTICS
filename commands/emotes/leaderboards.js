@@ -15,7 +15,7 @@ module.exports = {
      */
 
     execute(client, interaction) {
-        embedGen.fetchAndUpdateTopLeaderboards(client);
+        embedGen.fetchAndUpdateTopLeaderboards(client, "top");
         interaction.delete();
     }
 }
