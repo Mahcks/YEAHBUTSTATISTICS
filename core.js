@@ -1,6 +1,7 @@
 const { Client, Collection, Intents } = require("discord.js");
 const tmi = require('tmi.js');
 const tf = require('./twitch/twitchFunctions');
+const eg = require('./utils/embedGenerator');
 require('dotenv').config();
 
 /*
@@ -59,9 +60,10 @@ function onConnectedHandler(addr, port) {
     console.log(`\x1b[31m[LOGS] \x1b[35m[STATUS] \x1b[36mTMI\x1b[37m Connected to ${addr}:${port}`);
 }
 
+// Interval to run some functions to update any dynamic data.
+setInterval(function() {
+    eg.fetchAndUpdateTopLeaderboards(client);
+    console.log(`Updated top 25 emotes`)
 
-
-/*setInterval(function() {
-    console.log("setInterval")
-}, 1000);
-*/
+    // 1 minute = 60000 | 5 minutes = 300000
+}, 60000);

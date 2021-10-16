@@ -134,7 +134,6 @@ function createEmbedButtons() {
         var guild = client.guilds.cache.get('895033377336463380');
         var channel = guild.channels.cache.find(c => c.id === rows[0].channel_id);
         channel.messages.fetch(rows[0].message_id).then(msg => {
-            console.log(msg);    
             msg.edit({embeds: [embed]});
             }).catch(err => {
                 console.log(err);
