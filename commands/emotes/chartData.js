@@ -1,5 +1,5 @@
 const { ChartJSNodeCanvas  } = require('chartjs-node-canvas');
-const { MessageAttachment } = require('discord.js');
+const { MessageAttachment, MessageEmbed } = require('discord.js');
 const db = require('../../utils/db');
 
 const emotes = [];
@@ -19,8 +19,6 @@ function getEmoteData() {
 const width = 800;
 const height = 600;
 
-const chartCallback = (ChartJS) => {}
-
 module.exports = {
     name: "chart",
     description: "List top emotes.",
@@ -28,7 +26,7 @@ module.exports = {
 
     execute(client, interaction) {
         const canvas = new ChartJSNodeCanvas({ width, height });
-        
+
         const configuration = { 
             type: 'bar', 
             data: {
@@ -45,6 +43,13 @@ module.exports = {
 
         const image = canvas.renderToBuffer(configuration);
         const attachment = new MessageAttachment(image);
-        interaction.reply(attachment);
+
+        const attachmentEmbed = new MessageEmbed()
+            .setTitle("Chart")
+            .setDescription("This is a description")
+
+        var guild = client.guilds.cache.get('895033377336463380');
+        var channel = guild.channels.cache.find(c => c.id === interaction.channelId);
+        interaction.reply({ embeds: [attachmentEmbed], files: [attachmentEmbed] })
     }
 }

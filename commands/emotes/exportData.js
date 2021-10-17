@@ -1,4 +1,4 @@
-/*const Discord = require('discord.js');
+const Discord = require('discord.js');
 var db = require('../../utils/db');
 require('dotenv').config();
 
@@ -19,7 +19,7 @@ module.exports = {
             !export [emotes/usage]
         */
         // 1. Get the data from the database
-        /*if (arguments[0] === "emotes") {
+        if (arguments[0] === "emotes") {
             db.query(`SELECT * FROM emotes`, (err, rows) => {
                 if (err) throw err;
                 console.log("emotes", rows);
@@ -33,4 +33,3 @@ module.exports = {
         }
     }
 }
-*/

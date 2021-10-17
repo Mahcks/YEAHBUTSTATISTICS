@@ -117,7 +117,7 @@ async function weWide() {
     var difference = storedCodes.filter(x => localCodes.indexOf(x) === -1);
     if (difference.length === 0) {
         console.log("[SQL] Database is up to date");
-    } else {
+    } else if (difference.length >= 1) {
         console.log("[SQL] Database is behind: " + difference + " attempting to solve the problem...");
         // Update SQL
         getEmotes();

@@ -12,9 +12,11 @@ module.exports = {
         .setDescription(``)
         .addFields(
             { name: "!emote [search] [code]", value: "Get data from an emote."},
-            { name: "!emote list [bttv/ffz/7tv]", value: "Retrieves a specific platforms emotes."}
+            { name: "!emote list [bttv/ffz/7tv]", value: "Retrieves a specific platforms emotes."},
+            { name: "!leaderboards", value: "Fetches and updates the leaderboards." }
         )
         .setFooter(`v${process.env.VERSION}`)
+        
         interaction.reply({embeds: [Response]});
     }
 }
