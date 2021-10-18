@@ -3,6 +3,10 @@ var db = require('../../utils/db');
 const fs = require('fs');
 require('dotenv').config();
 
+var today = new Date();
+var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+var dateTime = date+' '+time;
 
 function storeData(data) {
     fs.writeFile(`./exportedData.txt`, data.toString(), 'utf8', function(err) {
@@ -30,7 +34,7 @@ function convertToCSV(objArray) {
     return str
 }
 
-function exportCSVFile(headers, items, fileTitle) {
+function exportCSVFile(headers, items, fileTitle, interaction, message) {
     if (headers) {
         items.unshift(headers);
     }
@@ -50,6 +54,8 @@ function exportCSVFile(headers, items, fileTitle) {
             console.log(`Wrote date to ${exportCSVFile}`);
         }
     });
+
+    interaction.reply({ content: `${message} generated ${dateTime}`, files: [exportedFilename] });
 }
 
 
@@ -79,13 +85,31 @@ module.exports = {
                 //storeData(emotesData);
                 var fileTitle = "emotes_data";
                 var headers = { code: "Emote", type: "Platform", format: "Format", id: "ID", url: "URL" };
-                exportCSVFile(headers, emotesData, fileTitle);
+                exportCSVFile(headers, emotesData, fileTitle, interaction, "Emote data");
             });
 
         } else if (arguments[0] === "usage") {
+            var usageData = [];
+
             db.query(`SELECT * FROM emote_usage`, (err, rows) => {
                 if (err) throw err;
-                console.log("emote_usage", rows)
+                for (var i = 0; i < rows.length; i++) {
+                    usageData.push({ 
+                        code: rows[i].code,
+                        count: rows[i].count
+                    });
+                }
+                var fileTitle = "emote_usage";
+                var headers = { code: "Emote", count: "Count" };
+
+                // Sort and split the array into chunks of 25
+                var compare = function(a, b) {
+                    return parseInt(b.count) - parseInt(a.count);
+                }
+
+                var sortedArray = usageData.sort(compare);
+
+                exportCSVFile(headers, sortedArray, fileTitle, interaction, "Emote usage");
             });
         }
     }

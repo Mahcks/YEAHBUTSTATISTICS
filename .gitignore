@@ -7,6 +7,8 @@ bin-release/
 # Other files and folders
 .settings/
 exportedData.txt
+emote_usage.csv
+emotes_data.csv
 .env
 emotes.json
 embeds.json
