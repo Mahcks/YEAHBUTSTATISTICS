@@ -2,10 +2,6 @@ const Discord = require('discord.js');
 var db = require('../../utils/db');
 require('dotenv').config();
 
-/**
- * TODO:
- * Merge emotes.js with this file
- */
 const emoteArray = [];
 let fetchedEmotes = [];
 

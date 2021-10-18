@@ -86,7 +86,11 @@ async function fetchLocalIds() {
 var retrievedPlatform = "";
 function fetchPlatfromFromCode(emoteCode) {
     db.query(`SELECT * FROM emotes WHERE code = ?;`, [emoteCode], (err, rows) => {
-        retrievedPlatform = rows[0].type;
+        if (rows[0].type === undefined) {
+            retrievedPlatform = "N/A"
+        } else {
+            retrievedPlatform = rows[0].type;
+        }
     });
 
     return retrievedPlatform;
