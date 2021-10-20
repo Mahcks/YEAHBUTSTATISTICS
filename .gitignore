@@ -9,6 +9,7 @@ bin-release/
 exportedData.txt
 emote_usage.csv
 emotes_data.csv
+emote_usage_with_timestamps.csv
 .env
 emotes.json
 embeds.json

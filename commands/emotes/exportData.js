@@ -93,24 +93,47 @@ module.exports = {
 
             db.query(`SELECT * FROM emote_usage`, (err, rows) => {
                 if (err) throw err;
-                for (var i = 0; i < rows.length; i++) {
-                    usageData.push({ 
-                        code: rows[i].code,
-                        count: rows[i].count,
-                        time_stamps: rows[i].time_stamps
-                    });
+
+                if (arguments[1] === "timestamps" || arguments[1] === "timestamp") { 
+                    for (var i = 0; i < rows.length; i++) {
+                        usageData.push({ 
+                            code: rows[i].code,
+                            count: rows[i].count,
+                            timestamps: rows[i].time_stamps
+                        });
+                    }
+                    var fileTitle = "emote_usage_with_timestamps";
+                    var headers = { code: "Emote", count: "Count", timestamps: "Timestamps" };
+    
+                    // Sorting function
+                    var compare = function(a, b) {
+                        return parseInt(b.count) - parseInt(a.count);
+                    }
+    
+                    var sortedArray = usageData.sort(compare);
+    
+                    exportCSVFile(headers, sortedArray, fileTitle, interaction, "Emote usage with timestamps");
+
+                } else {
+                    for (var i = 0; i < rows.length; i++) {
+                        usageData.push({ 
+                            code: rows[i].code,
+                            count: rows[i].count,
+                        });
+                    }
+                    var fileTitle = "emote_usage";
+                    var headers = { code: "Emote", count: "Count" };
+    
+                    // Sorting function
+                    var compare = function(a, b) {
+                        return parseInt(b.count) - parseInt(a.count);
+                    }
+    
+                    var sortedArray = usageData.sort(compare);
+    
+                    exportCSVFile(headers, sortedArray, fileTitle, interaction, "Emote usage");
                 }
-                var fileTitle = "emote_usage";
-                var headers = { code: "Emote", count: "Count", time_stamps: "Timestamps" };
-
-                // Sort and split the array into chunks of 25
-                var compare = function(a, b) {
-                    return parseInt(b.count) - parseInt(a.count);
-                }
-
-                var sortedArray = usageData.sort(compare);
-
-                exportCSVFile(headers, sortedArray, fileTitle, interaction, "Emote usage");
+                
             });
         }
     }

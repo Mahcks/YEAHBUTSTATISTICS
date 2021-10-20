@@ -8,16 +8,18 @@ module.exports = {
     execute(client, interaction, arguments) {
 
         const Response = new MessageEmbed()
-        .setTitle("YEAHBUTSTATISTICS")
         .setDescription(``)
+        .setAuthor(client.user.username, client.user.displayAvatarURL())
         .addFields(
-            { name: "!emote [search] [code]", value: "Get data from an emote."},
+            { name: "!emote [search] [code]", value: "Search data for an emote."},
             { name: "!emote list [bttv/ffz/7tv]", value: "Retrieves a specific platforms emotes."},
-            { name: "!export [emotes/usage]", value: "Exports all the emotes or emote usage as CSV files." },
+            { name: "!export [emotes/usage]", value: "Exports all the emote data to a CSV file." },
+            { name: "!export [usage] [optional: timestamps]", value: "Exports emote usage data to a CSV file. Timestamps are optional because files can be large." },
             { name: "!leaderboards", value: "Fetches and updates the leaderboards." }
         )
         .setFooter(`v${process.env.VERSION}`)
-        
+        .setTimestamp()
+
         interaction.reply({embeds: [Response]});
     }
 }
