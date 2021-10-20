@@ -27,9 +27,20 @@ let storedCodes = [];
 
 // Uploading an emote to SQL
 async function storeEmote(id, code, url, imageType, imageURL, type) {
-    db.query(`INSERT INTO emotes (id, code, url, imagetype, imageurl, type) VALUES (?, ?, ?, ?, ?, ?);`, [id, code, url, imageType, imageURL, type], (err, rows) => {
+    db.query(`SELECT 1 FROM emotes WHERE code = ?;`, [code], (err, rows) => {
         if (err) throw err;
-            console.log(`[SQL] Emote ${code} stored with ID: ${rows.insertId}`);
+        if (rows.length === 0) {
+            db.query(`INSERT INTO emotes (id, code, url, imagetype, imageurl, type) VALUES (?, ?, ?, ?, ?, ?);`, [id, code, url, imageType, imageURL, type], (err, rows) => {
+                if (err) throw err;
+                    console.log(`[SQL] Emote ${code} created`);
+            });
+        } else {
+            /*db.query(`UPDATE emotes (id, code, url, imagetype, imageurl, type) VALUES (?, ?, ?, ?, ?, ?) WHERE code = ?`, [id, code, url, imageType, imageURL, type, code], (err, rows) => {
+                if (err) throw err;
+                    console.log(`[SQL] Emote ${code} updated`)
+            });*/
+            console.log(`[SQL] Emote ${code} already exists, moving on...`)
+        }
     });
 }
 
@@ -110,7 +121,6 @@ async function storeEmotesLocally(json) {
 // Activily checks if the local JSON is out of date from APIs that BTTV/FFZ provide
 // If there is a difference remove/add/update the field in Database.
 async function weWide() {
-
     // First we grab the local JSON since we know it'll be the most up to date.
     fetchLocalIds();
 
@@ -120,33 +130,37 @@ async function weWide() {
     // Compare both localIds and storedIds
     var difference = storedCodes.filter(x => localCodes.indexOf(x) === -1);
     if (difference.length === 0) {
-        console.log("[SQL] Database is up to date");
+        console.log("\x1b[31m[LOGS] \x1b[34m[SQL]\x1b[37m Database is up to date\x1b[0m");
     } else if (difference.length >= 1) {
-        console.log("[SQL] Database is behind: " + difference + " attempting to solve the problem...");
+        console.log(`\x1b[31m[LOGS] \x1b[34m[SQL]\x1b[37m Database is behind: \x1b[31m${difference}\x1b[37m attempting to solve the problem...\x1b[0m`);
         // Update SQL
-        getEmotes();
+        getEmotes(true).then(() => {
+            console.log("\x1b[31m[LOGS] \x1b[34m[SQL]\x1b[37m Database is now updated!\x1b[0m");
+        });
     }
 }
 
 // Function that merges all emotes into one array for easy usage. 
-async function getEmotes() {
+async function getEmotes(updateSQL) {
     const bttvResponse = await fetch(bttvAPI);
     var bttvData = await bttvResponse.json();
 
     const ffzResponse = await fetch(ffzAPI);
     var ffzData = await ffzResponse.json();
 
-    const emotes = await api.fetchUserEmotes(process.env.CHANNEL_ID);
-    for (let i = 0; i < emotes.length; i++) {
-        seventvArray.push({
-            id: emotes[i]['id'],
-            code: emotes[i]['name'],
-            url: `https://7tv.app/emotes/${emotes[i]['id']}`, 
-            type: "webp",
-            imageURL: `https://cdn.7tv.app/emote/${emotes[i]['id']}/4x`,
-            source: "7tv"
-        });
-        //storeEmote(emotes[i]["id"], emotes[i]["name"], `https://7tv.app/emotes/${emotes[i]['id']}`, "webp", `https://cdn.7tv.app/emote/${emotes[i]['id']}/4x`, "7tv");
+    const sevenTVResponse = await api.fetchUserEmotes(process.env.CHANNEL_ID);
+    if (sevenTVResponse) {
+        for (let i = 0; i < sevenTVResponse.length; i++) {
+            seventvArray.push({
+                id: sevenTVResponse[i]['id'],
+                code: sevenTVResponse[i]['name'],
+                url: `https://7tv.app/emotes/${sevenTVResponse[i]['id']}`, 
+                type: "webp",
+                imageURL: `https://cdn.7tv.app/emote/${sevenTVResponse[i]['id']}/4x`,
+                source: "7tv"
+            });
+            if (updateSQL) storeEmote(sevenTVResponse[i]["id"], sevenTVResponse[i]["name"], `https://7tv.app/emotes/${sevenTVResponse[i]['id']}`, "webp", `https://cdn.7tv.app/emote/${sevenTVResponse[i]['id']}/4x`, "7tv");   
+        }
     }
 
     if(bttvResponse) { 
@@ -159,7 +173,7 @@ async function getEmotes() {
                 imageURL: `https://cdn.betterttv.net/emote/${bttvData['channelEmotes'][i]['id']}/3x`,
                 source: "bttv"
             })
-            //storeEmote(bttvData['channelEmotes'][i]['id'], bttvData['channelEmotes'][i]['code'], `https://betterttv.com/emotes/${bttvData['channelEmotes'][i]['id']}`, bttvData['channelEmotes'][i]['imageType'], `https://cdn.betterttv.net/emote/${bttvData['channelEmotes'][i]['id']}/3x`, "bttv")
+            if (updateSQL) storeEmote(bttvData['channelEmotes'][i]['id'], bttvData['channelEmotes'][i]['code'], `https://betterttv.com/emotes/${bttvData['channelEmotes'][i]['id']}`, bttvData['channelEmotes'][i]['imageType'], `https://cdn.betterttv.net/emote/${bttvData['channelEmotes'][i]['id']}/3x`, "bttv");
         }
         for(let i = 0; i < bttvData['sharedEmotes'].length; i++) {
             bttvArray.push({
@@ -170,7 +184,7 @@ async function getEmotes() {
                 imageURL: `https://cdn.betterttv.net/emote/${bttvData['sharedEmotes'][i]['id']}/2x`,
                 source: "bttv-shared"
             })
-            //storeEmote(bttvData['sharedEmotes'][i]['id'], bttvData['sharedEmotes'][i]['code'], `https://betterttv.com/emotes/${bttvData['sharedEmotes'][i]['id']}`, bttvData['sharedEmotes'][i]['imageType'], `https://cdn.betterttv.net/emote/${bttvData['sharedEmotes'][i]['id']}/2x`, "bttv-shared")
+            if (updateSQL) storeEmote(bttvData['sharedEmotes'][i]['id'], bttvData['sharedEmotes'][i]['code'], `https://betterttv.com/emotes/${bttvData['sharedEmotes'][i]['id']}`, bttvData['sharedEmotes'][i]['imageType'], `https://cdn.betterttv.net/emote/${bttvData['sharedEmotes'][i]['id']}/2x`, "bttv-shared");
         }
     }
 
@@ -184,7 +198,7 @@ async function getEmotes() {
                 imageURL: `https://cdn.frankerfacez.com/emote/${ffzData[i]['id']}/2`,
                 source: "ffz"
             })
-            //storeEmote(ffzData[i]['id'], ffzData[i]['code'], `https://www.frankerfacez.com/emoticon/${ffzData[i]['id']}`, ffzData[i]['imageType'], `https://cdn.frankerfacez.com/emote/${ffzData[i]['id']}/2`, "ffz")
+            if (updateSQL) storeEmote(ffzData[i]['id'], ffzData[i]['code'], `https://www.frankerfacez.com/emoticon/${ffzData[i]['id']}`, ffzData[i]['imageType'], `https://cdn.frankerfacez.com/emote/${ffzData[i]['id']}/2`, "ffz");
         }
     }
 

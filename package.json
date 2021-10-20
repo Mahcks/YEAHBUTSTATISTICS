@@ -22,6 +22,7 @@
     "fs": "^0.0.1-security",
     "glob": "^7.2.0",
     "mysql": "^2.18.1",
+    "nodemon": "^2.0.14",
     "reconlx": "^2.4.3",
     "tmi.js": "^1.8.5",
     "wokcommands": "^1.4.8"

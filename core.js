@@ -55,7 +55,6 @@ function onMessageHandler(target, context, msg, self) {
 
   // Called everytime bot connects to Twitch
 function onConnectedHandler(addr, port) {
-    tf.getEmotes();
     tf.weWide();
     console.log(`\x1b[31m[LOGS] \x1b[35m[STATUS] \x1b[36mTMI\x1b[37m Connected to ${addr}:${port}`);
 }
