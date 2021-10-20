@@ -96,11 +96,12 @@ module.exports = {
                 for (var i = 0; i < rows.length; i++) {
                     usageData.push({ 
                         code: rows[i].code,
-                        count: rows[i].count
+                        count: rows[i].count,
+                        time_stamps: rows[i].time_stamps
                     });
                 }
                 var fileTitle = "emote_usage";
-                var headers = { code: "Emote", count: "Count" };
+                var headers = { code: "Emote", count: "Count", time_stamps: "Timestamps" };
 
                 // Sort and split the array into chunks of 25
                 var compare = function(a, b) {
