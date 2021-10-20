@@ -49,7 +49,7 @@ module.exports = {
                                 .setURL(row[0].url)
                                 .setDescription(`[Image mirror](${row[0].imageurl})\nID: ${row[0].id}\nFormat: ${row[0].imagetype}`)
                                 .setThumbnail(row[0].imageurl)
-                                interaction.reply({ embeds: [emoteSearchEmbed]});
+                                interaction.reply({ embeds: [emoteSearchEmbed2]});
                             }
                             
                         } else {
