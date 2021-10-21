@@ -44,20 +44,17 @@ async function storeEmote(id, code, url, imageType, imageURL, type) {
     });
 }
 
-function writeTimestampToJSON(timestamp) { 
-    fs.writeFile("./data/emote_timestamps.json", json, 'utf8', function(err) {
-        if (err) { 
-            console.log(err);
-        }
+async function writeTimestampToJSON() { 
+    var timestampJSON = "";
+    fs.readFile('./data/emote_timestamps.json', (err, data) => {
+        if (err) throw err;
+        timestampJSON = JSON.parse(data);
+        console.log(timestampJSON["timestamps"])
     });
 }
 
-function readTimestamps(timestamp) {
-    fs.readFile('./data/emote_timestamps.json', (err, data) => {
-        if (err) throw err;
-        let timestampJSON = JSON.parse(data);
-        console.log(timestampJSON)
-    });
+async function readTimestamps() {
+    
 }
 
 // Triggers when the emote is used, appends it to its respective collection
@@ -243,4 +240,4 @@ function compareEmoteToMessage(message) {
     emoteUsed(emoteMap);
 }
 
-module.exports = {storeEmote, emoteUsed, getEmotes, fetchLocalIds, fetchEmoteIds, storeEmotesLocally, compareEmoteToMessage, weWide, fetchPlatfromFromCode, readTimestamps}
+module.exports = {storeEmote, emoteUsed, getEmotes, fetchLocalIds, fetchEmoteIds, storeEmotesLocally, compareEmoteToMessage, weWide, fetchPlatfromFromCode, readTimestamps, writeTimestampToJSON}

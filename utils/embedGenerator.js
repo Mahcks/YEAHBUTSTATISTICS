@@ -40,6 +40,8 @@ Fetch
 
 */
 
+
+
 // Fetch the embed and update it with an embed
 function fetchMessageAndUpdate(platform, data, client) {
     db.query(`SELECT * FROM embeds WHERE platform = ?`, [platform], (err, rows) => {
@@ -47,6 +49,22 @@ function fetchMessageAndUpdate(platform, data, client) {
         var channel = guild.channels.cache.find(c => c.id === rows[0].channel_id);
         channel.messages.fetch(rows[0].message_id).then(msg => {
             msg.edit(data);
+            msg.react("🔄");
+
+            const filter = (reaction, user) => reaction.emoji.name === "🔄" && !user.bot;
+
+            const collector = msg.createReactionCollector(filter, {
+                max: 5,
+            });
+
+            collector.on('collect', (reaction) => {
+                console.log(`Collected a new ${reaction.emoji.name} reaction`);
+            });
+
+            collector.on('end', (collected, reason) => {
+                console.log('It ended')
+            });
+
             }).catch(err => {
                 console.log(err);
         });
