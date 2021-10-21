@@ -44,6 +44,22 @@ async function storeEmote(id, code, url, imageType, imageURL, type) {
     });
 }
 
+function writeTimestampToJSON(timestamp) { 
+    fs.writeFile("./data/emote_timestamps.json", json, 'utf8', function(err) {
+        if (err) { 
+            console.log(err);
+        }
+    });
+}
+
+function readTimestamps(timestamp) {
+    fs.readFile('./data/emote_timestamps.json', (err, data) => {
+        if (err) throw err;
+        let timestampJSON = JSON.parse(data);
+        console.log(timestampJSON)
+    });
+}
+
 // Triggers when the emote is used, appends it to its respective collection
 async function emoteUsed(emoteMap) {
     for (const [key, value] of Object.entries(emoteMap)) {
@@ -60,10 +76,8 @@ async function emoteUsed(emoteMap) {
                 // emote exists, update count +1 and add the timestamp
                 db.query(`UPDATE emote_usage SET count = count + ? WHERE code = ?`, [value, key], (err, rows) => {
                     if (err) throw err;
-                    db.query(`UPDATE emote_usage SET time_stamps = CONCAT(time_stamps, '|',  ?) WHERE code = ?`, [dateTime, key], (err, rows) => {
-                        if (err) throw err;
+
                         console.log(`[EMOTES] ${key}: ${value}`);
-                    });
                 });
             }
         });
@@ -83,7 +97,7 @@ async function fetchEmoteIds() {
 
 // Read emotes.json and store the data into an array.
 async function fetchLocalIds() {
-    fs.readFile('emotes.json', (err, data) => {
+    fs.readFile('./data/emotes.json', (err, data) => {
         if (err) throw err;
         let emotes = JSON.parse(data);
         for (let i = 0; i < emotes.length; i++) {
@@ -109,7 +123,7 @@ function fetchPlatfromFromCode(emoteCode) {
 
 // Writes JSON file locally to store emotes
 async function storeEmotesLocally(json) {
-    fs.writeFile("./emotes.json", json, 'utf8', function(err) {
+    fs.writeFile("./data/emotes.json", json, 'utf8', function(err) {
             if (err) { 
                 console.log(err);
             } else {
@@ -229,4 +243,4 @@ function compareEmoteToMessage(message) {
     emoteUsed(emoteMap);
 }
 
-module.exports = {storeEmote, emoteUsed, getEmotes, fetchLocalIds, fetchEmoteIds, storeEmotesLocally, compareEmoteToMessage, weWide, fetchPlatfromFromCode}
+module.exports = {storeEmote, emoteUsed, getEmotes, fetchLocalIds, fetchEmoteIds, storeEmotesLocally, compareEmoteToMessage, weWide, fetchPlatfromFromCode, readTimestamps}
